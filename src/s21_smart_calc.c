@@ -240,48 +240,48 @@ void pushOutStr(leksem obj, stack_st *outStr) {
  * @brief translate to reverce polish notation
  * 
  * @param leksems 
- * @param steck 
+ * @param stack 
  * @param outStr 
  */
-void transPolNat(arrLecsem *leksems, stack_st *steck, stack_st *outStr) {
+void transPolNat(arrLecsem *leksems, stack_st *stack, stack_st *outStr) {
     for (int i = 0; i < leksems->index; i++) {
         if (leksems->arr[i].typeOper == NUM) {
             outStr->arr[outStr->index] = leksems->arr[i];
             outStr->index++;
         } else {
-            if (leksems->arr[i].typeOper == BKTL) pushSteck(leksems->arr[i], steck);
+            if (leksems->arr[i].typeOper == BKTL) pushSteck(leksems->arr[i], stack);
             if (leksems->arr[i].typeOper == BKTR) {
                 int flag = 1;
                 while (flag) {
-                    if (peecStack(steck).typeOper != BKTL) {
-                        pushOutStr(popSteck(steck), outStr);
+                    if (peecStack(stack).typeOper != BKTL && stack->index > 0) {
+                        pushOutStr(popSteck(stack), outStr);
                     } else {
                         flag = 0;
-                        popSteck(steck);
+                        if (stack->index > 0) popSteck(stack);
                     }
                 }
             }
 
             if (leksems->arr[i].priority > 0) {
-                if (steck->index == 0) {
-                    pushSteck(leksems->arr[i], steck);
+                if (stack->index == 0) {
+                    pushSteck(leksems->arr[i], stack);
                 } else {
-                    if (peecStack(steck).priority == 3 && leksems->arr[i].priority == 3) {
-                        pushSteck(leksems->arr[i], steck);
-                    } else if (peecStack(steck).priority >= leksems->arr[i].priority) {
-                        while (steck->index > 0 && peecStack(steck).priority >= leksems->arr[i].priority) {
-                            pushOutStr(popSteck(steck), outStr);
+                    if (peecStack(stack).priority == 3 && leksems->arr[i].priority == 3) {
+                        pushSteck(leksems->arr[i], stack);
+                    } else if (peecStack(stack).priority >= leksems->arr[i].priority) {
+                        while (stack->index > 0 && peecStack(stack).priority >= leksems->arr[i].priority) {
+                            pushOutStr(popSteck(stack), outStr);
                         }
-                        pushSteck(leksems->arr[i], steck);
+                        pushSteck(leksems->arr[i], stack);
                     } else {
-                        pushSteck(leksems->arr[i], steck);
+                        pushSteck(leksems->arr[i], stack);
                     }
                 }
             }
         }
     }
-    while (steck->index > 0) {
-        pushOutStr(popSteck(steck), outStr);
+    while (stack->index > 0) {
+        pushOutStr(popSteck(stack), outStr);
     }
 }
 
