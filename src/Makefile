@@ -2,7 +2,7 @@ CC = gcc
 FLAGS = -Wall -Werror -Wextra # -std=c11 -g -fsanitize=address
 TEST_FLAGS = -lcheck -lm -lpthread
 FLAG_COV = -lcheck -lgcov -fprofile --coverage
-TARGET = calc/build/newCalc.app/Contents/MacOS/newCalc
+TARGET = calc/build
 TAR = calc.tar.gz
 ifeq ($(shell uname), Linux)
 	TEST_FLAGS += -lrt -lsubunit
@@ -10,11 +10,10 @@ ifeq ($(shell uname), Linux)
 endif
 
 .PHONY: all
-all: dvi dist gcov_report## install and run program
-	$(TARGET)
+all: install ## install and run program
 
 .PHONY: install
-install: ## install and run program
+install: ## install
 	cd ./calc/build && cmake ../ && $(MAKE) all
 
 .PHONY: uninstall
@@ -22,8 +21,9 @@ uninstall:
 	rm -fr ./calc/build/*
 
 .PHONY: dvi
-dvi: ## generate and open doc
+dvi: ## generate and open doc (only mac os)
 	cd doxygen && ./doxygen Doxyfile && open html/index.html
+
 
 .PHONY: dist
 dist: install ## archive executable
@@ -42,6 +42,7 @@ gcov_report: test
 	./test
 	lcov -t "gcov_report" -o gcov_report.info -c -d ./
 	genhtml -o report gcov_report.info
+	open ./report/index.html
 	rm *.gcno *.gcda
 
 .PHONY: test
